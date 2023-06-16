@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from 'react'
 import Button from '../components/Button'
 import ClickCount from '../components/ClickCount'
 import styles from '../styles/home.module.css'
+import Navbar from '../components/Navbar'
+import { useUser } from '@auth0/nextjs-auth0/client';
 
 function throwError() {
   console.log(
@@ -11,60 +13,47 @@ function throwError() {
 }
 
 function Home() {
-  const [count, setCount] = useState(0)
-  const increment = useCallback(() => {
-    setCount((v) => v + 1)
-  }, [setCount])
 
-  useEffect(() => {
-    const r = setInterval(() => {
-      increment()
-    }, 1000)
+  const { user, error, isLoading } = useUser();
 
-    return () => {
-      clearInterval(r)
-    }
-  }, [increment])
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>{error.message}</div>;
+
 
   return (
-    <main className={styles.main}>
-      <h1>Fast Refresh Demo</h1>
-      <p>
-        Fast Refresh is a Next.js feature that gives you instantaneous feedback
-        on edits made to your React components, without ever losing component
-        state.
-      </p>
-      <hr className={styles.hr} />
+
+    user ? (
       <div>
-        <p>
-          Auto incrementing value. The counter won't reset after edits or if
-          there are errors.
-        </p>
-        <p>Current value: {count}</p>
+        <img src={user.picture} alt={user.name} />
+        <h2>{user.name}</h2>
+        <p>{user.email}</p>
+        <a href="/api/auth/logout">Logout</a>
       </div>
-      <hr className={styles.hr} />
-      <div>
-        <p>Component with state.</p>
-        <ClickCount />
+    ) : (
+      // <a href="/api/auth/login">Login</a>
+      <LandingPage/>
+    )
+  );
+}
+
+
+function LandingPage() {
+  return (
+  <>
+    <Navbar/>
+    <div className='container flex mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8'>
+      <div className='flex-1 flex flex-col justify-center'>
+        <h1 className='text-6xl leading-snug text-teal-600'>Track your Money, Anytime Anywhere with MTracker</h1>
+        <div>
+        <Button>Login</Button>
+        <Button class='pl-2'>Learn More</Button>
+        </div>
       </div>
-      <hr className={styles.hr} />
-      <div>
-        <p>
-          The button below will throw 2 errors. You'll see the error overlay to
-          let you know about the errors but it won't break the page or reset
-          your state.
-        </p>
-        <Button
-          onClick={(e) => {
-            setTimeout(() => document.parentNode(), 0)
-            throwError()
-          }}
-        >
-          Throw an Error
-        </Button>
+      <div className='flex-1'>
+        <img src='/images/image.jpg' alt='hero-image' className=''></img>
       </div>
-      <hr className={styles.hr} />
-    </main>
+    </div>
+  </>
   )
 }
 
