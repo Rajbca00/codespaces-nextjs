@@ -1,6 +1,11 @@
-import Button from './Button'
+import {PrimaryButton} from './Button'
+import { useUser } from '@auth0/nextjs-auth0/client';
+
 
 export default function Navbar () {
+
+  const { user, error, isLoading } = useUser();
+
     return (
         <header class="bg-white">
   <div class="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
@@ -38,7 +43,7 @@ export default function Navbar () {
             <li>
               <a
                 class="text-gray-500 transition hover:text-gray-500/75"
-                href="/"
+                href="/transactions"
               >
                 Transactions
               </a>
@@ -47,7 +52,7 @@ export default function Navbar () {
             <li>
               <a
                 class="text-gray-500 transition hover:text-gray-500/75"
-                href="/"
+                href="/configure"
               >
                 Configure
               </a>
@@ -59,12 +64,12 @@ export default function Navbar () {
 
       <div class="flex items-center gap-4">
         <div class="sm:flex sm:gap-4">
-          <a
-            class="rounded-md bg-teal-600 px-5 py-2.5 text-sm font-medium text-white shadow"
-            href="/"
-          >
+          {user ? <PrimaryButton href='/api/auth/logout'>
+            Logout
+          </PrimaryButton> :
+          <PrimaryButton href='/api/auth/login'>
             Login
-          </a>
+          </PrimaryButton>}
 
           {/* <div class="hidden sm:flex">
             <a
@@ -75,7 +80,7 @@ export default function Navbar () {
             </a>
           </div> */}
         </div>
-
+        
         <div class="block md:hidden">
           <button
             class="rounded bg-gray-100 p-2 text-gray-600 transition hover:text-gray-600/75"
